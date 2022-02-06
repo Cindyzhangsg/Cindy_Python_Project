@@ -1,0 +1,65 @@
+ punctuation_chars = ["'", '"', ",", ".", "!", ":", ";", '#', '@']
+# lists of words to use
+positive_words = []
+
+def strip_punctuation (x):
+	for char in punctuation_chars:
+		if char in x:
+			x = x.replace(char, '')
+	return x
+
+with open("positive_words.txt") as pos_f:
+    for lin in pos_f:
+        if lin[0] != ';' and lin[0] != '\n':
+            positive_words.append(lin.strip())
+    def get_pos (x):
+    	count = 0
+    	x = x.lower()
+    	x = strip_punctuation (x)
+    	words = x.split()
+    	for word in words:
+    		if word in positive_words:
+    			count +=1
+    	return count
+
+
+negative_words = []
+with open("negative_words.txt") as pos_f:
+    for lin in pos_f:
+        if lin[0] != ';' and lin[0] != '\n':
+            negative_words.append(lin.strip())
+
+
+def get_neg (x):
+   	count = 0
+   	x = x.lower()
+   	x = strip_punctuation(x)
+   	words = x.split()
+   	for word in words:
+   		if word in negative_words:
+		    count +=1
+   	return count 
+
+
+
+with open('project_twitter_data.csv', 'r') as twitter1:
+    twitter1 = twitter1.readlines()
+    lista_palavras = []
+    for line in twitter1:
+    	linha = line.split(',')
+    	if linha == linha[0]: continue
+    	lista_palavras.append(linha)
+
+
+with open ('resulting_data.csv', 'w') as resultado:
+    resultado.write("Number of Retweets, Number of Replies, Positive Score, Negative Score, Net Score")
+    resultado.write("\n")
+
+    for line in lista_palavras[1:]:
+    	score_pos =  get_pos(line[0])
+    	score_neg = - get_neg(line[0])
+    	rate = score_neg + score_pos
+    	row_string = [line[1], line[2], score_pos, score_neg, rate]
+    	skip_line = '\n'
+    	resultado.write(str(row_string)) 
+    	resultado.write(skip_line)
